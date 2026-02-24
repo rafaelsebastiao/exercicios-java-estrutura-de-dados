@@ -46,34 +46,7 @@ public class SistemaPostsBlog {
         }
     } // => O(N)
     
-    public PostsExtremos obterPrimeiroEUltimoPost(int usuarioId) {
-        //Modificação para pegar os posts de cada usuário sem necessidade de iteração.
-        Usuario usuario = getUsuarioByIndex(usuarioId);
-
-        List<Post> postsDoUsuario = usuario.getListPosts();
-       
-        for (int i = 0; i < postsDoUsuario.size() - 1; i++) { // O(N)
-            for (int j = 0; j < postsDoUsuario.size() - i - 1; j++) { // O(N)
-                if (postsDoUsuario.get(j).getTimestamp() > 
-                    postsDoUsuario.get(j + 1).getTimestamp()) {
-                    // Troca
-                    Post temp = postsDoUsuario.get(j);
-                    postsDoUsuario.set(j, postsDoUsuario.get(j + 1));
-                    postsDoUsuario.set(j + 1, temp);
-                }
-            }
-        }
-        
-        
-        if (postsDoUsuario.isEmpty()) {
-            return null;
-        }
-        
-        Post primeiro = postsDoUsuario.get(0);
-        Post ultimo = postsDoUsuario.get(postsDoUsuario.size() - 1);
-        
-        return new PostsExtremos(primeiro, ultimo);
-    } // O(N) * O(N) => O(N^2)
+    //Modificação: Exclusão do método obterPrimeiroEULltimo post pois já possui implementação dentro da própria classe.
     
 
     //1º modificação: Método para retornar usuário pelo seu index
@@ -96,13 +69,7 @@ public class SistemaPostsBlog {
 
     } 
     
-    //Modificação: Como cada usuário já possui sua quantidade de posts, e, conseguimos obter um usuario a partir de seu index graças ao método getUsuarioByIndex, nao há a necessidade de percorrer a lista inteira de posts pra contar quantos posts cada usuário tem. Conseguimos estabelecer esta relação de forma direta.
-    public int contarPostsDoUsuario(int usuarioId){
-        Usuario usuario = getUsuarioByIndex(usuarioId);
-
-        return usuario != null ? usuario.getTotalPosts() : 0;
-
-    }
+    //Modificação: Exclusão do método contarPosts, já que cada usuário possui um atributo interno para isso.
 
     public String gerarRelatorioGeral() {
         StringBuilder relatorio = new StringBuilder();
@@ -115,7 +82,7 @@ public class SistemaPostsBlog {
             // O(1)
             relatorio.append("Total de posts: ").append(totalPosts).append("\n");
             
-            PostsExtremos extremos = obterPrimeiroEUltimoPost(usuario.getId()); // O(N^2)
+            PostsExtremos extremos = usuario.getPostsExtremos(); 
 
             if (extremos != null) {
                 relatorio.append("Primeiro post: ")
@@ -158,9 +125,11 @@ public class SistemaPostsBlog {
         System.out.println("\nTestando operações críticas...");
         long inicioOp = System.currentTimeMillis();
         
-        PostsExtremos extremos = sistema.obterPrimeiroEUltimoPost(500);
-        int total = sistema.contarPostsDoUsuario(500);
+        //Modificação: Utilizando o método interno da classe de Usuarios para pegar seus posts extremos.
+        PostsExtremos extremos = sistema.getUsuarioByIndex(500).getPostsExtremos();
         
+        int total = sistema.getUsuarioByIndex(500).getTotalPosts();
+
         long fimOp = System.currentTimeMillis();
         System.out.println("Tempo de operações: " + (fimOp - inicioOp) + "ms");
         System.out.println("Total de posts do usuário 500: " + total);
